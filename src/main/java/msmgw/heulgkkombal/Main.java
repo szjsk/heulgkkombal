@@ -13,7 +13,8 @@ public class Main {
     public static void main(String[] args) {
         // Configure the OpenAPI Generator
         CodegenConfigurator configurator = new CodegenConfigurator();
-        configurator.setInputSpec("src/main/resources/example/openapi.yml");
+        //configurator.setInputSpec("src/main/resources/example/openapi.yml");
+        configurator.setInputSpec("src/main/resources/example/apidocs.json");
         configurator.setTemplateDir("src/main/resources/templates");
         configurator.setGeneratorName("java");
 
