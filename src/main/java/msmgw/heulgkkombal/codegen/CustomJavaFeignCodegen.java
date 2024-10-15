@@ -7,9 +7,10 @@ import org.openapitools.codegen.languages.JavaClientCodegen;
 
 import java.io.File;
 
-public class CustomJavaCodegen extends JavaClientCodegen implements CodegenConfig {
-    public CustomJavaCodegen() {
+public class CustomJavaFeignCodegen extends JavaClientCodegen implements CodegenConfig {
+    public CustomJavaFeignCodegen() {
         super();
+        this.supportedLibraries.put("custom-feign", "custom user feign library");
     }
 
     @Override
@@ -21,7 +22,7 @@ public class CustomJavaCodegen extends JavaClientCodegen implements CodegenConfi
         String var10000 = this.sourceFolder;
         String modelsFolder = (var10000 + File.separator + this.modelPackage().replace('.', File.separatorChar)).replace('/', File.separatorChar);
 
-        this.supportingFiles.add(new SupportingFile("model/ApiResponse.mustache", modelsFolder, "ApiResponse.java"));
+        this.supportingFiles.add(new SupportingFile("ApiResponse.mustache", modelsFolder, "ApiResponse.java"));
         this.supportingFiles.add(new SupportingFile("ApiClient.mustache", invokerFolder, "ApiClient.java"));
 /*        this.supportingFiles.add(new SupportingFile("EncodingUtils.mustache", invokerFolder, "EncodingUtils.java"));
         this.authFolder = (this.sourceFolder + "/" + this.invokerPackage + ".auth").replace(".", "/");
