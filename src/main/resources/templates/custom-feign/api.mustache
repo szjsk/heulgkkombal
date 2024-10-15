@@ -1,7 +1,6 @@
 package {{package}};
 
 import {{invokerPackage}}.ApiClient;
-import {{invokerPackage}}.EncodingUtils;
 {{#legacyDates}}
 import {{invokerPackage}}.ParamExpander;
 {{/legacyDates}}
@@ -22,7 +21,7 @@ import {{javaxPackage}}.validation.Valid;
 import feign.*;
 
 {{>generatedAnnotation}}
-public interface {{classname}} extends ApiClient.Api {
+public interface {{classname}} {
 
 {{#operations}}{{#operation}}
   /**
@@ -177,12 +176,7 @@ public interface {{classname}} extends ApiClient.Api {
   public static class {{operationIdCamelCase}}QueryParams extends HashMap<String, Object> {
       {{#queryParams}}
     public {{operationIdCamelCase}}QueryParams {{paramName}}(final {{{dataType}}} value) {
-        {{#collectionFormat}}
-      put("{{baseName}}", EncodingUtils.encodeCollection(value, "{{collectionFormat}}"));
-        {{/collectionFormat}}
-        {{^collectionFormat}}
-      put("{{baseName}}", EncodingUtils.encode(value));
-        {{/collectionFormat}}
+      put("{{baseName}}", value);
       return this;
     }
       {{/queryParams}}
