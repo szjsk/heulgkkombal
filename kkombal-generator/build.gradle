@@ -1,0 +1,29 @@
+plugins {
+    id 'groovy'
+    id 'java'
+    id 'java-gradle-plugin'
+  //  id 'hello-api-heulgkkombal' // Apply the custom plugin
+
+}
+
+group = 'heulgkkombal'
+version = '1.0.2-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal() // Add this line to include local Maven repository
+}
+
+
+
+dependencies {
+    implementation 'org.openapitools:openapi-generator:7.8.0'
+    implementation project(':kkombal-generator-plugin') // Add this line to include the plugin project
+
+}
+
+tasks.register("test") {
+    doLast {
+        println("Hello, test!")
+    }
+}

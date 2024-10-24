@@ -1,4 +1,4 @@
-package heulgkkombal
+package heulgkkombal.heulgkkombal
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -6,8 +6,13 @@ import org.gradle.api.Project
 internal class HelloApiPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.tasks.register("hello-api-heulgkkombal") {
-            it.doLast {
+            doLast {
                 println("Hello, API!")
+            }
+        }
+        project.tasks.register("printTest") {
+            doLast {
+                println("test")
             }
         }
     }
