@@ -1,30 +1,36 @@
-package msmgw.heulgkkombal;
+package heulgkkombal;
 
-import msmgw.heulgkkombal.codegen.CustomJavaFeignCodegen;
+import heulgkkombal.codegen.CustomJavaFeignCodegen;
 import org.openapitools.codegen.ClientOptInput;
 import org.openapitools.codegen.CodegenConstants;
 import org.openapitools.codegen.DefaultGenerator;
 import org.openapitools.codegen.config.CodegenConfigurator;
 
-import java.io.File;
-import java.util.List;
+public class HeulgkkombalGenerator {
 
-public class Main {
-    public static void main(String[] args) {
+    private String inputSpec = "src/main/resources/example/apidocs.json";
+    private final String templateDir = "src/main/resources/templates";
+    private final String generatorName = "java";
+    private String templateName = "custom-feign";
+    private String sourceFolder = "";
+    private String invokerPackage = "kr.co.monolith.test";
+    private String outputFolder = "src/main/java";
+
+
+    public void custom() {
         // Configure the OpenAPI Generator
         CodegenConfigurator configurator = new CodegenConfigurator();
-        //configurator.setInputSpec("src/main/resources/example/openapi.yml");
-        configurator.setInputSpec("src/main/resources/example/apidocs.json");
-        configurator.setTemplateDir("src/main/resources/templates");
-        configurator.setGeneratorName("java");
+        configurator.setInputSpec(inputSpec);
+        configurator.setTemplateDir(templateDir);
+        configurator.setGeneratorName(generatorName);
 
         CustomJavaFeignCodegen customJavaFeignCodegen = new CustomJavaFeignCodegen();
-        customJavaFeignCodegen.setTemplateDir("src/main/resources/templates/custom-feign");
-        customJavaFeignCodegen.setSourceFolder("");
+        customJavaFeignCodegen.setTemplateDir(templateDir + "/" + templateName);
+        customJavaFeignCodegen.setSourceFolder(sourceFolder);
         customJavaFeignCodegen.setApiPackage("kr.co.monolith.test.api");
         customJavaFeignCodegen.setModelPackage("kr.co.monolith.test.model");
         customJavaFeignCodegen.setInvokerPackage("kr.co.monolith.test");
-        customJavaFeignCodegen.setOutputDir("src/main/java");
+        customJavaFeignCodegen.setOutputDir(outputFolder);
         customJavaFeignCodegen.setLibrary("custom-feign");
         // Create ClientOptInput and set the custom codegen
         ClientOptInput clientOptInput = configurator.toClientOptInput();
@@ -44,10 +50,7 @@ public class Main {
         generator.setGeneratorPropertyDefault(CodegenConstants.GENERATE_RECURSIVE_DEPENDENT_MODELS, "true");
         generator.setGenerateMetadata(false);
 
-        List<File> generate = generator.opts(clientOptInput).generate();
-
-
-        //   System.out.println(collect);
+        generator.opts(clientOptInput).generate();
 
     }
 }

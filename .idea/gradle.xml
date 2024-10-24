@@ -10,6 +10,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/kkombal-generated-api" />
+            <option value="$PROJECT_DIR$/kkombal-generator" />
+            <option value="$PROJECT_DIR$/kkombal-generator-plugin" />
           </set>
         </option>
       </GradleProjectSettings>

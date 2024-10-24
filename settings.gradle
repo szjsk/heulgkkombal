@@ -1,2 +1,4 @@
 rootProject.name = 'heulgkkombal'
+include 'kkombal-generator'
+include 'kkombal-generator-plugin'
 

@@ -1,4 +1,4 @@
-package msmgw.heulgkkombal.codegen;
+package heulgkkombal.codegen;
 
 
 import org.openapitools.codegen.CodegenConfig;
