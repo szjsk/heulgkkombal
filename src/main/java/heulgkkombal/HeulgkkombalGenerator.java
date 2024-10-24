@@ -8,30 +8,25 @@ import org.openapitools.codegen.config.CodegenConfigurator;
 
 public class HeulgkkombalGenerator {
 
-    private String inputSpec = "src/main/resources/example/apidocs.json";
-    private final String templateDir = "src/main/resources/templates";
-    private final String generatorName = "java";
-    private String templateName = "custom-feign";
-    private String sourceFolder = "";
-    private String invokerPackage = "kr.co.monolith.test";
-    private String outputFolder = "src/main/java";
+    public void generate() {
 
+        // Load the configuration
+        ConfigVO config = ConfigLoader.loadConfig();
 
-    public void custom() {
         // Configure the OpenAPI Generator
         CodegenConfigurator configurator = new CodegenConfigurator();
-        configurator.setInputSpec(inputSpec);
-        configurator.setTemplateDir(templateDir);
-        configurator.setGeneratorName(generatorName);
+        configurator.setInputSpec(config.getInputSpec());
+        configurator.setTemplateDir(config.getTemplateDir());
+        configurator.setGeneratorName(config.getGeneratorName());
 
         CustomJavaFeignCodegen customJavaFeignCodegen = new CustomJavaFeignCodegen();
-        customJavaFeignCodegen.setTemplateDir(templateDir + "/" + templateName);
-        customJavaFeignCodegen.setSourceFolder(sourceFolder);
-        customJavaFeignCodegen.setApiPackage("kr.co.monolith.test.api");
-        customJavaFeignCodegen.setModelPackage("kr.co.monolith.test.model");
-        customJavaFeignCodegen.setInvokerPackage("kr.co.monolith.test");
-        customJavaFeignCodegen.setOutputDir(outputFolder);
-        customJavaFeignCodegen.setLibrary("custom-feign");
+        customJavaFeignCodegen.setTemplateDir(config.getTemplateDir() + "/" + config.getLibrary());
+        customJavaFeignCodegen.setSourceFolder(config.getSourceFolder());
+        customJavaFeignCodegen.setApiPackage(config.getInvokerPackage()  + "api");
+        customJavaFeignCodegen.setModelPackage(config.getInvokerPackage()  + "model");
+        customJavaFeignCodegen.setInvokerPackage(config.getInvokerPackage());
+        customJavaFeignCodegen.setOutputDir(config.getOutputFolder());
+        customJavaFeignCodegen.setLibrary(config.getLibrary());
         // Create ClientOptInput and set the custom codegen
         ClientOptInput clientOptInput = configurator.toClientOptInput();
         clientOptInput.config(customJavaFeignCodegen);
