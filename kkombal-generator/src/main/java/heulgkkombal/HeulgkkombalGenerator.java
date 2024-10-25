@@ -28,6 +28,8 @@ import java.util.stream.Stream;
  */
 public class HeulgkkombalGenerator {
 
+    private static final String CUSTOM_TEMPLATE_NAME = "templates";
+
     public void generate(ConfigVO config) {
 
         File specDir = new File(config.getInputSpecDir());
@@ -45,7 +47,7 @@ public class HeulgkkombalGenerator {
 
     private void generateFeignClient(String generatorName, String library, String outputFolder, String invokerPackage, String inputSpec) {
 
-        String customTemplateUriWithLibrary = extractTemplatesToTempDir(getClass().getClassLoader().getResource("templates"));
+        String customTemplateUriWithLibrary = extractTemplatesToTempDir(getClass().getClassLoader().getResource(CUSTOM_TEMPLATE_NAME));
 
         // Check if outputFolder is an absolute path
         Path outputPath = Paths.get(outputFolder);
@@ -101,30 +103,26 @@ public class HeulgkkombalGenerator {
 
     private String extractTemplatesToTempDir(URL customTemplateUri) {
         try {
-            System.out.println("start 1");
+
             if ("jar".equals(customTemplateUri.getProtocol())) {
-                System.out.println("2 customTemplateUri.getPath() = " + customTemplateUri.getPath());
                 JarURLConnection jarURLConnection = (JarURLConnection) customTemplateUri.openConnection();
                 JarFile jarFile = jarURLConnection.getJarFile();
-                Path tempDir = Files.createTempDirectory("templates");
-                System.out.println("start 3");
+                Path tempDir = Files.createTempDirectory(CUSTOM_TEMPLATE_NAME);
                 Enumeration<JarEntry> entries = jarFile.entries();
                 while (entries.hasMoreElements()) {
                     JarEntry entry = entries.nextElement();
-                    if (entry.getName().startsWith("templates") && !entry.isDirectory()) {
-                        File tempFile = new File(tempDir.toFile(), entry.getName().substring("templates/".length()));
+                    if (entry.getName().startsWith(CUSTOM_TEMPLATE_NAME) && !entry.isDirectory()) {
+                        File tempFile = new File(tempDir.toFile(), entry.getName().substring((CUSTOM_TEMPLATE_NAME + "/").length()));
                         tempFile.deleteOnExit();
                         FileUtils.copyInputStreamToFile(jarFile.getInputStream(entry), tempFile);
                     }
                 }
-                System.out.println("start 4 :: " + tempDir.toString());
                 return tempDir.toString();
             } else {
                 return Paths.get(customTemplateUri.getPath()).normalize().toString();
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
