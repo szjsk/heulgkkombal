@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+
+group = 'org.heulgkkombal'
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':kkombal-generator')
+    testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
+}
+
+gradlePlugin {
+    plugins {
+        heulgkkombal {
+            id = 'org.heulgkkombal.generator'
+            implementationClass = 'org.heulgkkombal.plugins.GeneratorPlugin'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
