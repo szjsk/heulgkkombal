@@ -1,6 +1,8 @@
 package heulgkkombal;
 
 import heulgkkombal.codegen.CustomJavaFeignCodegen;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openapitools.codegen.ClientOptInput;
 import org.openapitools.codegen.CodegenConstants;
@@ -11,8 +13,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Enumeration;
 import java.util.Objects;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
@@ -24,46 +30,52 @@ public class HeulgkkombalGenerator {
 
     public void generate(ConfigVO config) {
 
-        URL customTemplateUri = getClass().getClassLoader().getResource("templates");
-
-        if (customTemplateUri == null) {
-            throw new RuntimeException("Template directory not found");
-        }
-
         File specDir = new File(config.getInputSpecDir());
 
         Stream.of(Objects.requireNonNull(specDir.listFiles()))
                 .forEach(file -> {
-                    generateFeignClient(config.getGeneratorName(), config.getLibrary(), config.getOutputFolder(), config.getInvokerPackage(),
-                            customTemplateUri, config.getInvokerPackage() + "." + file.getName(), file.getAbsolutePath());
+                    generateFeignClient(config.getGeneratorName(),
+                            config.getLibrary(),
+                            config.getOutputFolder(),
+                            config.getInvokerPackage() + "." + FilenameUtils.removeExtension(file.getName()),
+                            file.getAbsolutePath());
                 });
 
     }
 
-    private void generateFeignClient(String generatorName, String library, String outputFolder, String invokerPackage,
-                                     URL customTemplateUri, String customPackage, String inputSpec) {
+    private void generateFeignClient(String generatorName, String library, String outputFolder, String invokerPackage, String inputSpec) {
 
-        //String customTemplateUriWithLibrary = getTemplatePathFromJar(customTemplateUri, library);
-        System.out.println("customPackage : " + customPackage);
+        String customTemplateUriWithLibrary = extractTemplatesToTempDir(getClass().getClassLoader().getResource("templates"));
+
+        // Check if outputFolder is an absolute path
+        Path outputPath = Paths.get(outputFolder);
+        if (!outputPath.isAbsolute()) {
+            outputPath = Paths.get(System.getProperty("user.dir"), outputFolder);
+        }
+
+        System.out.println("""
+                generatorName = %s
+                library = %s
+                outputFolder = %s
+                invokerPackage = %s
+                inputSpec = %s
+                customTemplateUriWithLibrary = %s"""
+                .formatted(generatorName, library, outputFolder, invokerPackage, inputSpec, customTemplateUriWithLibrary));
+
         // Configure the OpenAPI Generator
         CodegenConfigurator configurator = new CodegenConfigurator();
-        //configurator.setInputSpec(inputSpec);
-        configurator.setInputSpec("C:\\Users\\note-sz\\IdeaProjects\\heulgkkombal\\kkombal-generator\\src\\main\\resources\\example\\apidocs.json");
-
-        configurator.setTemplateDir("C:\\Users\\note-sz\\IdeaProjects\\heulgkkombal\\kkombal-generator\\src\\main\\resources\\templates");
-        //configurator.setGeneratorName(generatorName);
-        configurator.setGeneratorName("java");
+        configurator.setInputSpec(inputSpec);
+        configurator.setTemplateDir(customTemplateUriWithLibrary);
+        configurator.setGeneratorName(generatorName);
 
         CustomJavaFeignCodegen customJavaFeignCodegen = new CustomJavaFeignCodegen();
-        customJavaFeignCodegen.setTemplateDir("C:\\Users\\note-sz\\IdeaProjects\\heulgkkombal\\kkombal-generator\\src\\main\\resources\\templates\\custom-feign");
+        customJavaFeignCodegen.setTemplateDir(customTemplateUriWithLibrary + "/" + library);
         customJavaFeignCodegen.setSourceFolder(StringUtils.EMPTY);
-        customJavaFeignCodegen.setApiPackage(customPackage + ".api");
-        customJavaFeignCodegen.setModelPackage(customPackage + ".model");
+        customJavaFeignCodegen.setApiPackage(invokerPackage + ".api");
+        customJavaFeignCodegen.setModelPackage(invokerPackage + ".model");
         customJavaFeignCodegen.setInvokerPackage(invokerPackage);
-        customJavaFeignCodegen.setOutputDir("C:\\Users\\note-sz\\IdeaProjects\\heulgkkombal");
-        //customJavaFeignCodegen.setLibrary("custom-feign");
-        //customJavaFeignCodegen.setOutputDir(outputFolder);
-        //customJavaFeignCodegen.setLibrary(library);
+        customJavaFeignCodegen.setOutputDir(outputPath.toString());
+        customJavaFeignCodegen.setLibrary(library);
         // Create ClientOptInput and set the custom codegen
         ClientOptInput clientOptInput = configurator.toClientOptInput();
         clientOptInput.config(customJavaFeignCodegen);
@@ -87,17 +99,34 @@ public class HeulgkkombalGenerator {
     }
 
 
-    private String getTemplatePathFromJar(URL customTemplateUri, String library) {
+    private String extractTemplatesToTempDir(URL customTemplateUri) {
         try {
+            System.out.println("start 1");
             if ("jar".equals(customTemplateUri.getProtocol())) {
+                System.out.println("2 customTemplateUri.getPath() = " + customTemplateUri.getPath());
                 JarURLConnection jarURLConnection = (JarURLConnection) customTemplateUri.openConnection();
                 JarFile jarFile = jarURLConnection.getJarFile();
-                return "jar:file:" + jarFile.getName() + "!/templates/" + library;
+                Path tempDir = Files.createTempDirectory("templates");
+                System.out.println("start 3");
+                Enumeration<JarEntry> entries = jarFile.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
+                    if (entry.getName().startsWith("templates") && !entry.isDirectory()) {
+                        File tempFile = new File(tempDir.toFile(), entry.getName().substring("templates/".length()));
+                        tempFile.deleteOnExit();
+                        FileUtils.copyInputStreamToFile(jarFile.getInputStream(entry), tempFile);
+                    }
+                }
+                System.out.println("start 4 :: " + tempDir.toString());
+                return tempDir.toString();
             } else {
-                return Paths.get(customTemplateUri.getPath(), library).normalize().toString();
+                return Paths.get(customTemplateUri.getPath()).normalize().toString();
             }
+
         } catch (IOException e) {
-            throw new RuntimeException("Error getting template path from jar", e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
+
 }

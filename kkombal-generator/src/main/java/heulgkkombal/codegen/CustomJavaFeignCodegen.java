@@ -8,6 +8,7 @@ import org.openapitools.codegen.languages.JavaClientCodegen;
 import java.io.File;
 
 public class CustomJavaFeignCodegen extends JavaClientCodegen implements CodegenConfig {
+
     public CustomJavaFeignCodegen() {
         super();
         this.supportedLibraries.put("custom-feign", "custom user feign library");

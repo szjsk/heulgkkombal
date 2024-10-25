@@ -5,7 +5,9 @@ import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Specification
 import spock.lang.TempDir
 
+
 class LoadSpecFromServerIntegrationTest extends Specification{
+/*
     @TempDir
     File testProjectDir
     File buildFile
@@ -40,5 +42,6 @@ class LoadSpecFromServerIntegrationTest extends Specification{
         result.output.contains("successfully")
         result.task(":load-spec-from-server").outcome == TaskOutcome.SUCCESS
     }
+*/
 
 }

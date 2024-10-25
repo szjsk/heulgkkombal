@@ -4,35 +4,36 @@ package {{invokerPackage}};
 */
 
 import {{invokerPackage}}.api.*;
+import feign.gson.GsonDecoder;
+import feign.gson.GsonEncoder;
+import feign.slf4j.Slf4jLogger;
 import feign.Feign;
 import feign.Logger;
 import feign.Request;
 import feign.RequestInterceptor;
-//import feign.slf4j.Slf4jLogger;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.TimeUnit;
 
-//@Configuration
-//@RequiredArgsConstructor
+@Configuration
 public class FeignApiConfig {
-//private final RequestInterceptor requestInterceptor; //custom auth instance
+    @Autowired
+    private  RequestInterceptor requestInterceptor; //custom auth instance
 
 {{#apiInfo}}
     {{#apis}}
         {{#operations}}
-          //  @Bean
+            @Bean
             public {{classname}} {{#lambda.camelcase}}{{classname}}{{/lambda.camelcase}}() {
-            return Feign.builder()
-                //.decoder(new CustomGsonDecoder())
-                //.encoder(new CustomGsonEncoder())
-                //.logLevel(Logger.Level.FULL)
-                //.logger(new Slf4jLogger({{classname}}.class))
-                .options(new Request.Options(10, TimeUnit.SECONDS, 60, TimeUnit.SECONDS, true))
-                .target({{classname}}.class, "{{basePath}}");
+                return Feign.builder()
+                    .decoder(new GsonDecoder())
+                    .encoder(new GsonEncoder())
+                    .logLevel(Logger.Level.FULL)
+                    .logger(new Slf4jLogger({{classname}}.class))
+                    .options(new Request.Options(10, TimeUnit.SECONDS, 60, TimeUnit.SECONDS, true))
+                    .target({{classname}}.class, "{{basePath}}");
             }
         {{/operations}}
     {{/apis}}
