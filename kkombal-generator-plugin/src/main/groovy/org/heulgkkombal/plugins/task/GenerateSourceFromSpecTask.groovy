@@ -1,11 +1,10 @@
 package org.heulgkkombal.plugins.task
 
 import heulgkkombal.ConfigVO
-import heulgkkombal.HeulgkkombalGenerator
+import heulgkkombal.CustomGeneratorFactory
+import heulgkkombal.generator.CustomSpringFeignGenerator
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 abstract class GenerateSourceFromSpecTask extends DefaultTask {
@@ -31,8 +30,6 @@ abstract class GenerateSourceFromSpecTask extends DefaultTask {
         configVO.setInvokerPackage(invokerPackage)
         configVO.setOutputFolder(outputFolder)
 
-        HeulgkkombalGenerator generator = new HeulgkkombalGenerator()
-        generator.generate(configVO);
-
+        CustomGeneratorFactory.of().getGenerator(library).generate(configVO);
     }
 }
