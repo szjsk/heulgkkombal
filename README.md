@@ -1,5 +1,9 @@
 # heulgkkombal
 
+참조 : https://github.com/OpenAPITools/openapi-generator
+
+API Server : https://github.com/szjsk/heulgkkom
+
 ## 1. 프로젝트 소개
 heulgkkom에서 생성된 api spec를 기준으로 각 프로젝트의 api를 소스로 생성해주는 프로젝트입니다.
 open api를 활용하였으며 0.0.1버전 기준으로 feign만 지원됩니다.
