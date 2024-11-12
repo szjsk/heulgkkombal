@@ -32,6 +32,7 @@ public class FeignApiConfig {
                     .encoder(new GsonEncoder())
                     .logLevel(Logger.Level.FULL)
                     .logger(new Slf4jLogger({{classname}}.class))
+                    .requestInterceptor(requestInterceptor)
                     .options(new Request.Options(10, TimeUnit.SECONDS, 60, TimeUnit.SECONDS, true))
                     .target({{classname}}.class, "{{basePath}}");
             }

@@ -27,7 +27,7 @@ abstract class LoadSpecFromServerTask extends DefaultTask {
             }
         }
 
-        def url = new URL(specApiUri)
+        def url = new URL(specApiUri +"/"+ projectName + "?envType=" + envType)
         def connection = (HttpURLConnection) url.openConnection()
         connection.setRequestMethod('GET')
         connection.connect()
